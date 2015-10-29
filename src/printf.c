@@ -7,9 +7,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-// TODO: temp
-#include <msp430.h>
-
 int putc(int c, void *stream);
 int putchar(int c);
 int puts(const char *);
