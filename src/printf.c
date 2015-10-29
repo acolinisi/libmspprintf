@@ -55,11 +55,15 @@ int printf(const char *format, ...)
     char c;
     int i;
     long n;
+    int fill_zeros;
+    unsigned d;
 
     va_list a;
     va_start(a, format);
     while((c = *format++)) {
         if(c == '%') {
+            fill_zeros = 0;
+parse_fmt_char:
             switch(c = *format++) {
                 case 's':                       // String
                     puts_no_newline(va_arg(a, char*));
@@ -81,12 +85,22 @@ int printf(const char *format, ...)
                     break;
                 case 'x':                       // 16 bit heXadecimal
                     i = va_arg(a, int);
-                    puth(i >> 12);
-                    puth(i >> 8);
-                    puth(i >> 4);
+                    d = i >> 12;
+                    if (d > 0 || fill_zeros >= 4)
+                        puth(d);
+                    d = i >> 8;
+                    if (d > 0 || fill_zeros >= 3)
+                        puth(d);
+                    d = i >> 4;
+                    if (d > 0 || fill_zeros >= 2)
+                        puth(d);
                     puth(i);
                     break;
-                case 0: return 0; // TODO: return value
+                case '0':
+                    c = *format++;
+                    fill_zeros = c - '0';
+                    goto parse_fmt_char;
+                case 0: return 0;
                 default: goto bad_fmt;
             }
         } else
