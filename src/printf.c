@@ -7,9 +7,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-int putc(int c, void *stream);
+// We depend on our consumer (usually io.c) provide these:
 int putchar(int c);
-int puts(const char *);
 int puts_no_newline(const char *);
 
 #define PUTC(c) putchar(c);
