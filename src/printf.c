@@ -11,7 +11,7 @@
 int putchar(int c);
 int puts_no_newline(const char *);
 
-#define PUTC(c) putchar(c);
+#define PUTC(c) putchar(c)
 
 static const unsigned long dv[] = {
 //  4294967296      // 32 bit unsigned max
