@@ -1,8 +1,2 @@
-EXEC = libmspprintf.a
-
-OBJECTS = \
-	printf.o \
-
+include ../Makefile
 include $(MAKER_ROOT)/Makefile.gcc
-
-VPATH = ../../src
