@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-// We depend on our consumer (usually io.c) provide these:
-int putchar(int c);
-int puts_no_newline(const char *);
+// The I/O backend library provides these
+int io_putchar(int c);
+int io_puts_no_newline(const char *);
 
-#define PUTC(c) putchar(c)
+#define PUTC(c) io_putchar(c)
 
 static const unsigned long dv[] = {
 //  4294967296      // 32 bit unsigned max
@@ -66,7 +66,7 @@ int printf(const char *format, ...)
 parse_fmt_char:
             switch(c = *format++) {
                 case 's':                       // String
-                    puts_no_newline(va_arg(a, char*));
+                    io_puts_no_newline(va_arg(a, char*));
                     break;
                 case 'c':                       // Char
                     PUTC(va_arg(a, int)); // TODO: 'char' generated a warning
