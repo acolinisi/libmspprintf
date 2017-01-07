@@ -40,16 +40,25 @@ static void xtoa(unsigned long x, const unsigned long *dp)
             while(x >= d) ++c, x -= d;
             PUTC(c);
         } while(!(d & 1));
-    } else
+    } else {
         PUTC('0');
+    }
 }
 
 static void puth(unsigned n)
 {
     static const char hex[16] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+    char c = hex[n & 15];
     PUTC(hex[n & 15]);
 }
- 
+
+int puts(const char *str){
+	while(*str != 0){
+		PUTC(*str++);
+	}
+	return 0;
+}
+
 int printf(const char *format, ...)
 {
     char c;
