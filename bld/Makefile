@@ -1,9 +1,10 @@
 LIB = libmspprintf
 
 OBJECTS = \
-	printf.o \
+	  	printf.o \
 
 DEPS += \
-	libwispbase \
+		libwispbase \
+		libmspconsole \
 
 override SRC_ROOT = ../../src
