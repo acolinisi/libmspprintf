@@ -57,34 +57,76 @@ int printf(const char *format, ...)
     long n;
     int fill_zeros;
     unsigned d;
+    int width;
 
     va_list a;
     va_start(a, format);
     while((c = *format++)) {
         if(c == '%') {
             fill_zeros = 0;
+            width = 16;
 parse_fmt_char:
             switch(c = *format++) {
+                /* modifiers */
+                case 'l':                       // "long", i.e. +16 bit to width
+                    width += 16;
+                    goto parse_fmt_char;
+                    break;
+                case '0':
+                    c = *format++;
+                    fill_zeros = c - '0';
+                    goto parse_fmt_char;
+
                 case 's':                       // String
                     io_puts_no_newline(va_arg(a, char*));
                     break;
                 case 'c':                       // Char
                     PUTC(va_arg(a, int)); // TODO: 'char' generated a warning
                     break;
-                case 'i':                       // 16 bit Integer
-                case 'u':                       // 16 bit Unsigned
+
+                case 'i':                       // signed
                     i = va_arg(a, int);
-                    if(c == 'i' && i < 0) i = -i, PUTC('-');
-                    xtoa((unsigned)i, dv + 5);
+                    if(i < 0) i = -i, PUTC('-');
+                    if (width == 32)
+                        xtoa((unsigned long)i, dv);
+                    else if (width == 16)
+                        xtoa((unsigned)i, dv + 5);
+                    else
+                        PUTC('?'); // unsupported width
                     break;
-                case 'l':                       // 32 bit Long
-                case 'n':                       // 32 bit uNsigned loNg
-                    n = va_arg(a, long);
-                    if(c == 'l' &&  n < 0) n = -n, PUTC('-');
-                    xtoa((unsigned long)n, dv);
+                case 'u':                       // unsigned
+                    n = va_arg(a, unsigned long);
+                    if (width == 32)
+                        xtoa((unsigned long)n, dv);
+                    else if (width == 16)
+                        xtoa((unsigned)n, dv + 5);
+                    else
+                        PUTC('?'); // unsupported width
                     break;
-                case 'x':                       // 16 bit heXadecimal
+
+                case 'p':                       // 32 bit heXadecimal
+                    PUTC('0');
+                    PUTC('x');
+                    fill_zeros = 8;
+                    width = sizeof(void *) * 8;
+                    /* fall through */
+                case 'x':                       // 32 bit heXadecimal
                     i = va_arg(a, int);
+
+                    if (width == 32) {
+                            d = i >> 28;
+                            if (d > 0 || fill_zeros >= 8)
+                                puth(d);
+                            d = i >> 24;
+                            if (d > 0 || fill_zeros >= 7)
+                                puth(d);
+                            d = i >> 20;
+                            if (d > 0 || fill_zeros >= 6)
+                                puth(d);
+                            d = i >> 16;
+                            if (d > 0 || fill_zeros >= 5)
+                                puth(d);
+                    }
                     d = i >> 12;
                     if (d > 0 || fill_zeros >= 4)
                         puth(d);
@@ -96,10 +138,6 @@ parse_fmt_char:
                         puth(d);
                     puth(i);
                     break;
-                case '0':
-                    c = *format++;
-                    fill_zeros = c - '0';
-                    goto parse_fmt_char;
                 case 0: return 0;
                 default: goto bad_fmt;
             }
