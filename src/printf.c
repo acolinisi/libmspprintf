@@ -4,7 +4,6 @@
 // NOTE: We are not using the libc printf because it's huge:
 // https://e2e.ti.com/support/development_tools/compiler/f/343/t/442632
 
-#include <stdlib.h>
 #include <stdarg.h>
 
 // The I/O backend library provides these
